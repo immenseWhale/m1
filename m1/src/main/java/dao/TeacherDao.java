@@ -1,6 +1,7 @@
 package dao;
 import java.sql.*;
 import java.util.*;
+import vo.*;
 import util.*;
 
 public class TeacherDao {
@@ -8,23 +9,21 @@ public class TeacherDao {
 --mariaDB 문자열을  집계하는 GROUP_CONCAT(문자컬럼) 집계함수가 있다
 SELECT 
 	t.teacher_no,	t.teacher_id, 
-	t.teacher_name, ts.subject_no, 
-	GROUP_CONCAT(s.subject_name)
+	t.teacher_name, ts.teacher_no, 
+	GROUP_CONCAT(s.teacher_name)
 FROM 	teacher t 
-	INNER JOIN teacher_subject ts
+	INNER JOIN teacher_teacher ts
 	ON t.teacher_no = ts.teacher_no
-			INNER JOIN subject s
-			ON ts.subject_no = s.subject_no;
+			INNER JOIN teacher s
+			ON ts.teacher_no = s.teacher_no;
 GROUP BY t.teacher_no, t.teacher_id, t.teacher_name
 LIMIT 0,10;
 -- good/구원이/자바,C# -> TeacherDao.selectTeacerListByPage()
 
 --> 교과목이 연결 안된 강사는 안 나온다. left join으로 바꾼다.
 SELECT 
-    t.teacher_no AS teacherNo, 
-	 t.teacher_id AS teacherId, 
-	 t.teacher_name AS teacherName,
-    ts.subject_no AS subjectNo, 
+    t.teacher_no AS teacherNo, t.teacher_id AS teacherId, 
+    t.teacher_name AS teacherName, ts.subject_no AS subjectNo, 
 	 GROUP_CONCAT(s.subject_name) AS subjects
 FROM 
 	teacher t
@@ -67,7 +66,7 @@ LIMIT ?, ?;
 		return list;
 	}
 	
-	//페이징을 위한 총 행 구하기
+//페이징을 위한 총 행 구하기
 	public int selectTeacherCnt () throws Exception {
 		int row = 0;
 		DBUtil dbUtil = new DBUtil();
@@ -81,6 +80,104 @@ LIMIT ?, ?;
 		return row;
 	}
 	
+	
+//강사 1명 상세 보기
+	public Teacher selectTeacherOne(int teacherNo)  throws Exception {
+		Teacher teacher = null;
+		DBUtil dbUtil = new DBUtil();
+		Connection conn = dbUtil.getConnection();
+		
+		String oneSql = "SELECT teacher_no teacherNo, teacher_id teacherId, teacher_name teacherName, teacher_history teacherHistory, createdate, updatedate FROM teacher WHERE teacher_no=?";
+		PreparedStatement stmt = conn.prepareStatement(oneSql);
+		stmt.setInt(1, teacherNo);
+		ResultSet rs = stmt.executeQuery();
+		
+		//어차피 한개의 결과만 나오기 때문에 배열이 아닌 단일 값으로 가져오겠다.
+		if (rs.next()){
+			teacher = new Teacher();	
+			teacher.setTeacherNo(rs.getInt("teacherNo"));
+			teacher.setTeacherId(rs.getString("teacherId"));
+			teacher.setTeacherName(rs.getString("teacherName"));
+			teacher.setTeacherHistory(rs.getString("teacherHistory"));;
+			teacher.setCreatedate(rs.getString("createdate"));
+			teacher.setUpdatedate(rs.getString("updatedate"));
+		}
+		return teacher;
+	}
+	
+//수정
+	public int updateTeacher(Teacher teacher) throws Exception {
+		int result = 0;
+		DBUtil dbUtil = new DBUtil();
+		Connection conn = dbUtil.getConnection();
+
+		String modSql = "UPDATE teacher SET teacher_id=?, teacher_name=?, teacher_history=?, updatedate=NOW() WHERE teacher_no=?";
+		PreparedStatement modStmt = conn.prepareStatement(modSql);
+		modStmt.setString(1, teacher.getTeacherId());
+		modStmt.setString(2, teacher.getTeacherName());
+		modStmt.setString(3, teacher.getTeacherHistory());
+		modStmt.setInt(4, teacher.getTeacherNo());
+		result = modStmt.executeUpdate();
+		if(result != 0) {
+			System.out.println(result+ "행 수정되었습니다. <-- TeacherDao.updateTeacher");
+		}		
+		return result;
+	}
+	
+//삭제
+	public int deleteTeacher(int teacherNo) throws Exception {
+		int result = 0;
+		DBUtil dbUtil = new DBUtil();
+		Connection conn = dbUtil.getConnection();
+		String delSql = "DELETE FROM teacher WHERE teacher_no = ?";
+		PreparedStatement delStmt = conn.prepareStatement(delSql);
+		delStmt.setInt(1, teacherNo);
+		result = delStmt.executeUpdate();
+		if(result != 0) {
+			System.out.println(result+ "행 삭제되었습니다. <-- TeacherDao.deleteTeacher");
+		}
+		
+		return result;
+	}
+	
+//선생님 추가													
+	public int insertTeacher(HashMap<String, Object> map) throws Exception {
+		int result = 0;
+/*
+INSERT INTO teacher (teacher_id, teacher_name, teacher_history, createdate, updatedate)
+VALUES ('test7', 'test7', '메모메모메모', NOW(), NOW());
+*/
+		DBUtil dbUtil = new DBUtil();
+		Connection conn = dbUtil.getConnection();
+		
+		//해시맵 vo로 받아온다
+		Subject subject = (Subject)(map.get("subject"));
+		Teacher teacher = (Teacher)(map.get("teacher"));
+
+		System.out.println(teacher.getTeacherId()+ "<--parm-- TeacherDao.insertTeacher");
+		System.out.println(teacher.getTeacherName()+ "<--parm-- TeacherDao.insertTeacher");
+		System.out.println(teacher.getTeacherHistory()+ "<--parm-- TeacherDao.insertTeacher");
+		System.out.println(subject.getSubjectNo()+ "<--parm-- TeacherDao.insertTeacher");
+		
+		//teacher 테이블에 먼저 삽입
+		String thSql ="INSERT INTO teacher(teacher_id, teacher_name, teacher_history, createdate, updatedate) VALUES (?, ?, ?, NOW(), NOW())";
+		PreparedStatement thStmt = conn.prepareStatement(thSql, PreparedStatement.RETURN_GENERATED_KEYS);
+		thStmt.setString(1, teacher.getTeacherId());
+		thStmt.setString(2, teacher.getTeacherName());
+		thStmt.setString(3, teacher.getTeacherHistory());
+		System.out.println(thStmt + " <--stmt-- TeacherDao.insertTeacher");
+		//teacher 테이블 PK 구한다
+		
+		ResultSet keyRs = thStmt.getGeneratedKeys(); // 저장된 키값을 반환
+		System.out.println(keyRs + " <--ResultSet-- TeacherDao.insertTeacher");
+
+		if (keyRs.next()) {
+			result = keyRs.getInt(1);
+		    System.out.println("teacher 테이블 PK값 : " + result + " <-- TeacherDao.insertTeacher");
+		}
+		
+		return result;
+	}
 	
 	
 	

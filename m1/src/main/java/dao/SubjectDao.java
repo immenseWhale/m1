@@ -126,4 +126,23 @@ public class SubjectDao {
 		return row;
 	}
 	
+	//6)과목 목록만 가져오기
+	public ArrayList<Subject> selectSubjectName() throws Exception{
+		ArrayList<Subject> result = new ArrayList<Subject>();
+		DBUtil dbUtil = new DBUtil();
+		Connection conn = dbUtil.getConnection();
+		
+		String sql="SELECT DISTINCT  subject_no subjectNo, subject_name subjectName FROM subject";
+		PreparedStatement stmt = conn.prepareStatement(sql);
+		ResultSet rs = stmt.executeQuery();
+		while(rs.next()){
+			Subject s = new Subject();
+			s.setSubjectNo(rs.getInt("subjectNo"));
+			s.setSubjectName(rs.getString("subjectName"));
+			result.add(s);
+		}
+		
+		return result;
+	}
+	
 }

@@ -77,7 +77,7 @@
 	<div>
 		<h1>Teacher List</h1>
 	</div>
-	
+	<hr>
 			
 	<!-- rowPerPage 선택 form -->
 	<div style="float:left;">
@@ -98,7 +98,7 @@
 	
 	<!-- 선생님 등록 페이지로 이동 -->
 	<div style="float:right;">
-		<a href = "<%=request.getContextPath()%>/teacher/addteacher.jsp">추가</a>
+		<a href = "<%=request.getContextPath()%>/teacher/addTeacher.jsp">추가</a>
 	</div>
 	
 	<!-- 선생님 목록 테이블 출력 -->

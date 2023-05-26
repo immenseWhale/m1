@@ -2,13 +2,14 @@
 <%@ page import="dao.*"%>
 <%@ page import="vo.*"%>
 <%
+	request.setCharacterEncoding("utf-8");
 	//유효성검사
 	if(request.getParameter("subjectNo")==null
 	||request.getParameter("subjectName")==null
 	||request.getParameter("subjectTime")==null
 	||request.getParameter("subjectNo").equals("")
 	||request.getParameter("subjectName").equals("")
-	||request.getParameter("subjectTime").equals("")){
+	||request.getParameter("subjectTime").equals("0")){
 		response.sendRedirect(request.getContextPath()+"/subject/modifySubject.jsp");	
 		System.out.println("파라미터검사에서 튕긴다 <--parm-- modifySubjectAction.jsp");
 		return;	

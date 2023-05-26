@@ -64,7 +64,7 @@
 						<input type="text" name="subjectName" value="<%= subject.getSubjectName() %>">
 					</td>
 					<td>
-						<input type="text" name="subjectTime" value="<%= subject.getSubjectTime() %>">
+						<input type="number" min="0" name="subjectTime" value="<%= subject.getSubjectTime() %>">
 					</td>
 					<td><%=subject.getCreatedate()%> </td>
 					<td><%=subject.getUpdatedate()%> </td>

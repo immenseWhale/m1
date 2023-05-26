@@ -1,29 +1,30 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="dao.*"%>
-<%@ page import="vo.*" %>
 <%@ page import="java.util.*"%>
 <%
 	//모델 호출
-	SubjectDao subjectDao = new SubjectDao();
-	//리스트를 위한 변수 선언
+	TeacherDao teacherDao = new TeacherDao();
+
+	//페이징 리스트를 위한 변수 선언
 	//현재 페이지
 	int currentPage=1;
 	if(request.getParameter("currentPage")!=null){
 		currentPage = Integer.parseInt(request.getParameter("currentPage"));
+		System.out.println(currentPage + "<--crt-- teacherList.jsp 새로 들어간 페이지 넘버");
 	}
 	//페이지에 보여주고 싶은 행의 개수
 	int rowPerPage = 4;
 	if(request.getParameter("rowPerPage")!=null){
 		rowPerPage = Integer.parseInt(request.getParameter("rowPerPage"));
-		System.out.println(rowPerPage + "<--crt-- subjectList.jsp 새로 들어간 페이지 당 행의 수");
+		System.out.println(rowPerPage + "<--crt-- teacherList.jsp 새로 들어간 페이지 당 행의 수");
 	}
 	//페이지 주변부에 보여주고싶은 리스트의 개수
 	int pageRange = 2;
 	//시작 행
 	int beginRow = (currentPage-1) * rowPerPage + 1;
 	
-	//총 행을 구하기 위한 sql
-	int totalRow = subjectDao.selectSubjectCnt();
+	//총 행을 구하기 위한 메소드
+	int totalRow = teacherDao.selectTeacherCnt();
 	
 	//마지막 페이지
 	int lastPage = totalRow / rowPerPage;
@@ -39,16 +40,15 @@
 	if (maxPage > lastPage){
 		maxPage = lastPage;
 	}
-	//subject 목록 출력을 위한 메소드
-	ArrayList<Subject> subjectList  = subjectDao.selectSubjectListByPage(beginRow, rowPerPage);
 
-
+	//teacher 출력
+	ArrayList<HashMap<String, Object>> teacherList  = teacherDao.selectTeacherListByPage(beginRow, rowPerPage);
 %>
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Subject List</title>
+<title>Teacher List</title>
 <!-- Latest compiled and minified CSS -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <!-- Latest compiled JavaScript -->
@@ -64,17 +64,24 @@
 	a:visited { /* 방문한 글자색  */
 		color:#747474;
 	}
+	.center {
+    float: right;
+    position: relative;
+    left: -50%;
+  }
 </style>
 </head>
 <body>
 <div class="container">	
-	<!-- subject List 출력 -->
+<!-- teacher List 출력 --------------------------->
 	<div>
-		<h1>Subject List</h1>
+		<h1>Teacher List</h1>
 	</div>
+	
+			
 	<!-- rowPerPage 선택 form -->
 	<div style="float:left;">
-		<form action="<%=request.getContextPath()%>/subject/subjectList.jsp" method="post">
+		<form action="<%=request.getContextPath()%>/teacher/teacherList.jsp" method="post">
 			<select name="rowPerPage" onchange="this.form.submit()"> <!-- 옵션 선택시 바로 submit -->
 			<%
 				for (int i = 2; i < 31; i = i + 2) {
@@ -88,33 +95,34 @@
 			</select>
 		</form>	
 	</div>
+	
+	<!-- 선생님 등록 페이지로 이동 -->
 	<div style="float:right;">
-		<a href = "<%=request.getContextPath()%>/subject/addSubject.jsp">추가</a>
+		<a href = "<%=request.getContextPath()%>/teacher/addteacher.jsp">추가</a>
 	</div>
-
+	
+	<!-- 선생님 목록 테이블 출력 -->
 	<div>
 		<table class="table table-bordered ">
 			<tr>
-				<th>과목명</th>
-				<th>시수</th>
-				<th>만든 날짜</th>
-				<th>수정 날짜</th>
-				<th>수정</th>
-				<th>삭제</th>
+				<th>Teacher No</th>
+				<th>ID</th>
+				<th>이름</th>
+				<th>Subject No</th>
+				<th>담당 과목</th>
+				<th>더 보기</th>
 			</tr>
 		<%
-			for(Subject m : subjectList){
+			 for(HashMap<String, Object> m : teacherList){
 		%>				
 				<tr>	
-					<td><%=m.getSubjectName()%> </td>
-					<td><%=m.getSubjectTime()%> </td>
-					<td><%=m.getCreatedate()%> </td>
-					<td><%=m.getUpdatedate()%> </td>
+					<td><%=m.get("teacherNo")%> </td>
+					<td><%=m.get("teacherId")%> </td>
+					<td><%=m.get("teacherName")%> </td>
+					<td><%=m.get("subjectNo")%></td>
+					<td><%=m.get("subjects")%></td>
 					<td>
-						<a href = "<%=request.getContextPath()%>/subject/modifySubject.jsp?subjectNo=<%=m.getSubjectNo()%>">수정</a>
-					</td>
-					<td>
-						<a href = "<%=request.getContextPath()%>/subject/removeSubjectAction.jsp?subjectNo=<%=m.getSubjectNo()%>">삭제</a>
+						<a href = "<%=request.getContextPath()%>/teacher/teacherOne.jsp?teacherNo=<%=m.get("teacherNo")%>">상세보기</a>
 					</td>
 				</tr>
 		<%
@@ -123,12 +131,12 @@
 		</table>
 	</div>
 <!--페이지 리스트 ---------------------------->
-	<div align="center">
+	<div class="center" >
 	<%
 		//1번 페이지보다 작은데 나오면 음수로 가버린다
 		if (minPage > 1) {
 	%>
-			<a href="<%=request.getContextPath()%>/subject/subjectList.jsp?currentPage=<%=minPage-pageRange%>">이전</a>
+			<a href="<%=request.getContextPath()%>/teacher/teacherList.jsp?currentPage=<%=minPage-pageRange%>">이전</a>
 	
 	<%	
 		}
@@ -139,7 +147,7 @@
 	<%
 			}else{
 	%>
-				<a href="<%=request.getContextPath()%>/subject/subjectList.jsp?currentPage=<%=i%>"><%=i %></a>
+				<a href="<%=request.getContextPath()%>/teacher/teacherList.jsp?currentPage=<%=i%>"><%=i %></a>
 	<%
 			}
 		}
@@ -148,7 +156,7 @@
 		if(maxPage != lastPage ){
 	%>
 			<!-- maxPage+1해도 동일하다 -->
-			<a href="<%=request.getContextPath()%>/subject/subjectList.jsp?currentPage=<%=minPage+pageRange%>">다음</a>
+			<a href="<%=request.getContextPath()%>/teacher/teacherList.jsp?currentPage=<%=minPage+pageRange%>">다음</a>
 	<%
 		}
 	%>

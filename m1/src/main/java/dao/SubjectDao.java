@@ -4,6 +4,7 @@ import java.sql.*;
 import util.*;
 import vo.*;
 
+
 public class SubjectDao {
 	//1)과목 목록										//현재 페이지, 페이지당 보여줄 행의 개수, 페이지 목록 몇개 보여줄건지의 개수
 	public ArrayList<Subject> selectSubjectListByPage(int beginRow, int rowPerPage) throws Exception {
@@ -13,7 +14,9 @@ public class SubjectDao {
 		
 		String mainSql = "SELECT subject_no subjectNo, subject_name subjectName, subject_time subjectTime, createdate, updatedate FROM subject LIMIT ?, ?";
 		PreparedStatement mainStmt = conn.prepareStatement(mainSql);
-		mainStmt.setInt(1, beginRow);
+		//페이징 처리를 위한 SQL 쿼리문에서의 인덱스는 0부터 시작하므로 beginRow를 1을 빼서 0부터 시작하도록 설정
+
+		mainStmt.setInt(1, beginRow - 1);
 		mainStmt.setInt(2, rowPerPage);
 		
 		ResultSet mainRs = mainStmt.executeQuery();
@@ -29,9 +32,7 @@ public class SubjectDao {
 		//System.out.println(list+ "<--ArrayList-- SubjectDao.selectSubjectListByPage");
 
 		return list;
-	}
-	
-	
+	}	
 	
 	
 	//2)과목 추가
@@ -46,7 +47,7 @@ public class SubjectDao {
 		addStmt.setInt(2, subject.getSubjectTime());
 		row = addStmt.executeUpdate();
 		if(row != 0) {
-			System.out.println(row+ "행 수정되었습니다. <-- SubjectDao.updateSubject");
+			System.out.println(row+ "행 추가되었습니다.. <-- SubjectDao.insertSubject");
 		}
 		return row;
 	}
@@ -117,10 +118,11 @@ public class SubjectDao {
 		
 		String sql = "SELECT COUNT(*) FROM subject"; 
 		PreparedStatement stmt = conn.prepareStatement(sql);
-		row = stmt.executeUpdate();
-		if(row != 0) {
-			System.out.println(row+ "행 수정되었습니다. <-- SubjectDao.updateSubject");
-		}			
+		ResultSet rs = stmt.executeQuery();
+		if(rs.next()) {
+			row = rs.getInt("COUNT(*)");
+		}
+		
 		return row;
 	}
 	

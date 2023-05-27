@@ -49,6 +49,12 @@
 		<h1>선생님 상세 정보</h1>
 	</div>
 	<hr>
+		<div style="float:right;">
+			<form action="<%=request.getContextPath()%>/teacher/removeTeacherActrion.jsp" method="post">
+				<input type="hidden" name="teacherNo" value="<%=teacher.getTeacherNo()%>">
+				<button class="btn btn-primary btn-lg" type="submit">과목 추가</button>
+			</form>
+		</div>
 	<div class="center">
 		<table class="table table-bordered ">
 			<tr>
@@ -71,13 +77,15 @@
 			</tr>
 		</table>
 		<div class="row">
-			<div class="col-6 text-center">
+			
+			<div class="col-5 text-center">
 				<form action="<%=request.getContextPath()%>/teacher/modifyTeacher.jsp" method="post">
 					<input type="hidden" name="teacherNo" value="<%=teacher.getTeacherNo()%>">
-					<button class="btn btn-primary btn-lg" type="submit">수정</button>
+					<button class="btn btn-warning btn-lg" type="submit">수정</button>
 				</form>
 			</div>
 			<div class="col-6 text-center">
+				
 				<form action="<%=request.getContextPath()%>/teacher/removeTeacherActrion.jsp" method="post">
 					<input type="hidden" name="teacherNo" value="<%=teacher.getTeacherNo()%>">
 					<button class="btn btn-warning btn-lg" type="submit">삭제</button>

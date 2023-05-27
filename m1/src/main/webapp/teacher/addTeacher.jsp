@@ -1,14 +1,4 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="dao.*"%>
-<%@ page import="vo.*" %>
-<%@ page import="java.util.*"%>
-<%
-	//모델 호출
-	SubjectDao subjectDao = new SubjectDao();
-	//subject 목록 출력을 위한 메소드
-	ArrayList<Subject> subjectList  = subjectDao.selectSubjectName();
-	
-%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -65,25 +55,11 @@
 					</textarea>
 				</td>
 			</tr>
-			<tr>
-				<th>교과목</th>
-				<td>
-					<select name="subjectNo">
-				<%
-					for(Subject s : subjectList){
-				%>
-						<option value="<%=s.getSubjectNo()%>"><%=s.getSubjectName() %></option>
 
-				<%
-					}
-				%>
-					</select>
-				</td>
-			</tr>
 		</table>
 		<button type="submit">추가</button>
 		</form>
-	</div>
+	<	/div>
 </div>
 </body>
 </html>

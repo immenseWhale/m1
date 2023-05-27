@@ -141,7 +141,7 @@ LIMIT ?, ?;
 	}
 	
 //선생님 추가													
-	public int insertTeacher(HashMap<String, Object> map) throws Exception {
+	public int insertTeacher(Teacher teacher) throws Exception {
 		int result = 0;
 /*
 INSERT INTO teacher (teacher_id, teacher_name, teacher_history, createdate, updatedate)
@@ -150,30 +150,18 @@ VALUES ('test7', 'test7', '메모메모메모', NOW(), NOW());
 		DBUtil dbUtil = new DBUtil();
 		Connection conn = dbUtil.getConnection();
 		
-		//해시맵 vo로 받아온다
-		Subject subject = (Subject)(map.get("subject"));
-		Teacher teacher = (Teacher)(map.get("teacher"));
-
-		System.out.println(teacher.getTeacherId()+ "<--parm-- TeacherDao.insertTeacher");
-		System.out.println(teacher.getTeacherName()+ "<--parm-- TeacherDao.insertTeacher");
-		System.out.println(teacher.getTeacherHistory()+ "<--parm-- TeacherDao.insertTeacher");
-		System.out.println(subject.getSubjectNo()+ "<--parm-- TeacherDao.insertTeacher");
-		
 		//teacher 테이블에 먼저 삽입
 		String thSql ="INSERT INTO teacher(teacher_id, teacher_name, teacher_history, createdate, updatedate) VALUES (?, ?, ?, NOW(), NOW())";
-		PreparedStatement thStmt = conn.prepareStatement(thSql, PreparedStatement.RETURN_GENERATED_KEYS);
-		thStmt.setString(1, teacher.getTeacherId());
-		thStmt.setString(2, teacher.getTeacherName());
-		thStmt.setString(3, teacher.getTeacherHistory());
-		System.out.println(thStmt + " <--stmt-- TeacherDao.insertTeacher");
+		PreparedStatement addStmt = conn.prepareStatement(thSql);
+		addStmt.setString(1, teacher.getTeacherId());
+		addStmt.setString(2, teacher.getTeacherName());
+		addStmt.setString(3, teacher.getTeacherHistory());
+		System.out.println(addStmt + " <--stmt-- TeacherDao.insertTeacher");
 		//teacher 테이블 PK 구한다
 		
-		ResultSet keyRs = thStmt.getGeneratedKeys(); // 저장된 키값을 반환
-		System.out.println(keyRs + " <--ResultSet-- TeacherDao.insertTeacher");
-
-		if (keyRs.next()) {
-			result = keyRs.getInt(1);
-		    System.out.println("teacher 테이블 PK값 : " + result + " <-- TeacherDao.insertTeacher");
+		result = addStmt.executeUpdate();
+		if(result != 0) {
+			System.out.println(result+ "행 추가되었습니다..  <-- TeacherDao.insertTeacher");
 		}
 		
 		return result;

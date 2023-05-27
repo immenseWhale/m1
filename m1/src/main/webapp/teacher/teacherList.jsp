@@ -97,7 +97,7 @@
 	</div>
 	
 	<!-- 선생님 등록 페이지로 이동 -->
-	<div style="float:right;">
+		
 		<a href = "<%=request.getContextPath()%>/teacher/addTeacher.jsp">추가</a>
 	</div>
 	

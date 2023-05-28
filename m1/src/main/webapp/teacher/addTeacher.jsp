@@ -59,7 +59,7 @@
 		</table>
 		<button type="submit">추가</button>
 		</form>
-	<	/div>
+	</div>
 </div>
 </body>
 </html>

@@ -49,13 +49,16 @@
 		<h1>선생님 상세 정보</h1>
 	</div>
 	<hr>
-		<div style="float:right;">
-			<form action="<%=request.getContextPath()%>/teacher/removeTeacherActrion.jsp" method="post">
-				<input type="hidden" name="teacherNo" value="<%=teacher.getTeacherNo()%>">
-				<button class="btn btn-primary btn-lg" type="submit">과목 추가</button>
-			</form>
-		</div>
-	<div class="center">
+	
+	<div class="text-end mb-3">
+		<form action="<%=request.getContextPath()%>/teacherSubject/addTeacherSubject.jsp" method="post">
+			<input type="hidden" name="teacherNo" value="<%=teacher.getTeacherNo()%>">
+			<input type="hidden" name="teacherName" value="<%=teacher.getTeacherName()%>">
+			<button class="btn btn-primary btn-lg" type="submit">과목 추가</button>
+		</form>
+	</div>
+	
+	<div>
 		<table class="table table-bordered ">
 			<tr>
 				<th>Teacher No</th>

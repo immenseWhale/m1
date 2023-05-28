@@ -99,8 +99,7 @@
 	<!-- 선생님 등록 페이지로 이동 -->
 		
 		<a href = "<%=request.getContextPath()%>/teacher/addTeacher.jsp">추가</a>
-	</div>
-	
+
 	<!-- 선생님 목록 테이블 출력 -->
 	<div>
 		<table class="table table-bordered ">
@@ -162,7 +161,6 @@
 	%>
 	
 	</div>
-
 </div>
 </body>
 </html>

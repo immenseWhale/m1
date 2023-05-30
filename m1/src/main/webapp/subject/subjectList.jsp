@@ -68,10 +68,16 @@
 </head>
 <body>
 <div class="container">	
+<!-- 상단 메인 메뉴 추가 -->
+	<div>
+		<jsp:include page="/home.jsp"></jsp:include>
+	</div>
+	
 	<!-- subject List 출력 -->
 	<div>
 		<h1>Subject List</h1>
 	</div>
+	<hr>
 	<!-- rowPerPage 선택 form -->
 	<div style="float:left;">
 		<form action="<%=request.getContextPath()%>/subject/subjectList.jsp" method="post">

@@ -73,6 +73,11 @@
 </head>
 <body>
 <div class="container">	
+<!-- 상단 메인 메뉴 추가 -->
+	<div>
+		<jsp:include page="/home.jsp"></jsp:include>
+	</div>
+	
 <!-- teacher List 출력 --------------------------->
 	<div>
 		<h1>Teacher List</h1>
